@@ -63,7 +63,7 @@ No files, no sockets, no client-specific dependencies.
 | `TW_PREFLIGHT_VERB=modify` | yes | The command verb being run (`modify`, `delete`, `done`, …). |
 | `TW_PREFLIGHT_FILTER=…` | yes | Filter tokens as a space-separated, shlex-safe string. |
 | `TW_PREFLIGHT_CMD=…` | no | Full original command string (for display purposes only). |
-| `TW_PREFLIGHT_THRESHOLD=3` | no | Task count above which to block. Default: 3. |
+| `TW_PREFLIGHT_THRESHOLD=3` | no | Task count at or above which to block. Default: 3. |
 | `TW_PREFLIGHT_CONFIRMED=1` | no | Set on re-run after user confirms. Hook exits 0 immediately. |
 
 `TW_CLIENT=<name>` is also recommended (e.g. `TW_CLIENT=web`) to identify the
@@ -94,7 +94,7 @@ Exits 0 immediately when any of the following are true:
 - `TW_NOINTERACT` is not set (CLI / interactive session — hook is invisible)
 - `TW_PREFLIGHT_CONFIRMED=1` (user already confirmed)
 - No verb or filter provided in env vars
-- Task count ≤ threshold
+- Task count < threshold
 
 ---
 

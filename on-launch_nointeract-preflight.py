@@ -24,7 +24,7 @@ Environment variables (set by the calling client):
   TW_PREFLIGHT_VERB=modify   — the command verb (modify/delete/done/start/…)
   TW_PREFLIGHT_FILTER=…      — filter tokens (space-separated, shlex-safe)
   TW_PREFLIGHT_CMD=…         — full original command string (for display only)
-  TW_PREFLIGHT_THRESHOLD=3   — task count above which to block (default: 3)
+  TW_PREFLIGHT_THRESHOLD=3   — task count at or above which to block (default: 3)
 
 On block, writes to stderr (one JSON line):
   {"type":"tw_preflight","count":N,"verb":"…","filter":"…","cmd":"…"}
@@ -129,7 +129,7 @@ def main():
     except Exception:
         sys.exit(0)  # on any error, don't block — fail open
 
-    if count > threshold:
+    if count >= threshold:
         signal = {
             'type':      'tw_preflight',
             'count':     count,
