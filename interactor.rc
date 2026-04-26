@@ -1,0 +1,6 @@
+# interactor.rc — persistent config for the nointeract-preflight hook
+# Installed to: ~/.task/config/interactor.rc
+# Environment variables (TW_PREFLIGHT_THRESHOLD etc.) take precedence.
+
+# threshold: block mutating commands that would affect this many tasks or more
+threshold=3

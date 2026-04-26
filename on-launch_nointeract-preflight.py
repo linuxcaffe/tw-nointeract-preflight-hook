@@ -96,6 +96,24 @@ else:
 # Original Code
 # ============================================================================
 
+def _read_rc():
+    """Read ~/.task/config/interactor.rc; env vars take precedence."""
+    rc = {}
+    task_dir = Path(os.environ.get('TW_TASK_DIR', str(Path.home() / '.task')))
+    rc_path = task_dir / 'config' / 'interactor.rc'
+    try:
+        for line in rc_path.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if '=' in line:
+                k, _, v = line.partition('=')
+                rc[k.strip()] = v.strip()
+    except (OSError, IOError):
+        pass
+    return rc
+
+
 def main():
     # Only act for non-interactive clients
     if not os.environ.get('TW_NOINTERACT'):
@@ -113,8 +131,11 @@ def main():
     if not verb or not filter_str:
         sys.exit(0)
 
+    rc = _read_rc()
+
+    # Env var > interactor.rc > built-in default
     try:
-        threshold = int(os.environ.get('TW_PREFLIGHT_THRESHOLD', '3'))
+        threshold = int(os.environ.get('TW_PREFLIGHT_THRESHOLD') or rc.get('threshold', '3'))
     except ValueError:
         threshold = 3
 

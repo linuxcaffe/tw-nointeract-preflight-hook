@@ -98,17 +98,71 @@ Exits 0 immediately when any of the following are true:
 
 ---
 
+## Signal Protocol for Other Hooks
+
+`TW_NOINTERACT` is a general convention any hook can adopt. Hooks that require
+terminal interaction should detect it and emit a structured signal rather than
+attempting to read from `/dev/tty`.
+
+### `tw_needs_terminal` — route command to a terminal
+
+When a hook needs interactive input that cannot be replicated in a UI, it emits:
+
+```json
+{"type": "tw_needs_terminal", "reason": "subtask activation prompts", "cmd": "111 start"}
+```
+
+Then exits 1. The client opens a terminal running the command directly — no
+confirmation dialog, no extra step. The user completes the interaction there.
+
+This pattern keeps hooks working as designed for terminal users while giving
+non-interactive clients a clean escape hatch. The client never needs to know
+what the hook does; it just routes to terminal.
+
+**Hook implementation:**
+
+```python
+if os.environ.get('TW_NOINTERACT'):
+    import json, os, sys
+    print(json.dumps({
+        'type':   'tw_needs_terminal',
+        'reason': 'describe what needs interaction',
+        'cmd':    os.environ.get('TW_PREFLIGHT_CMD', ''),
+    }), file=sys.stderr)
+    sys.exit(1)
+```
+
+**Client detection** — same pattern as `tw_preflight`: scan stderr for a JSON
+line, check `"type"`.
+
+---
+
 ## Installation
 
 ```bash
 cp on-launch_nointeract-preflight.py ~/.task/hooks/
 chmod +x ~/.task/hooks/on-launch_nointeract-preflight.py
+cp interactor.rc ~/.task/config/
 ```
 
 Or via [awesome-taskwarrior](https://github.com/linuxcaffe/awesome-taskwarrior):
 
 ```bash
-awesome install nointeract-preflight
+tw -I interactor
+```
+
+---
+
+## Configuration
+
+Settings live in `~/.task/config/interactor.rc`. Environment variables
+(set by the client per-call) take precedence over rc file values.
+
+```ini
+# ~/.task/config/interactor.rc
+
+# Block mutating commands affecting this many tasks or more (default: 3)
+threshold=3
 ```
 
 ---
