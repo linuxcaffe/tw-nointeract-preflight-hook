@@ -52,6 +52,9 @@ User types:  "status:pending pro:myproject mod +urgent"
 
 ## Protocol
 
+The fleet-wide contract this hook is part of, including the signal formats below, is in
+awesome-taskwarrior's [CONVENTIONS.md](https://github.com/linuxcaffe/awesome-taskwarrior/blob/main/CONVENTIONS.md).
+
 The hook communicates entirely through environment variables and stderr.
 No files, no sockets, no client-specific dependencies.
 
@@ -104,15 +107,15 @@ Exits 0 immediately when any of the following are true:
 terminal interaction should detect it and emit a structured signal rather than
 attempting to read from `/dev/tty`.
 
-### `tw_needs_terminal` — route command to a terminal
+### `tw_needs_pty` — route command to a terminal
 
 When a hook needs interactive input that cannot be replicated in a UI, it emits:
 
 ```json
-{"type": "tw_needs_terminal", "reason": "subtask activation prompts", "cmd": "111 start"}
+{"type": "tw_needs_pty", "reason": "subtask activation prompts", "cmd": "111 start"}
 ```
 
-Then exits 1. The client opens a terminal running the command directly — no
+`reason` is optional. Then exits 1. The client opens a terminal running the command directly — no
 confirmation dialog, no extra step. The user completes the interaction there.
 
 This pattern keeps hooks working as designed for terminal users while giving
@@ -125,7 +128,7 @@ what the hook does; it just routes to terminal.
 if os.environ.get('TW_NOINTERACT'):
     import json, os, sys
     print(json.dumps({
-        'type':   'tw_needs_terminal',
+        'type':   'tw_needs_pty',
         'reason': 'describe what needs interaction',
         'cmd':    os.environ.get('TW_PREFLIGHT_CMD', ''),
     }), file=sys.stderr)
