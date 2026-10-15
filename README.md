@@ -217,17 +217,13 @@ result = subprocess.run(['task', ...], env=env, ...)
 
 ---
 
-## Reference Implementation: tw-web
+## Clients
 
-[tw-web](https://github.com/linuxcaffe/tw-web) is the reference client.
-
-- `TW_NOINTERACT=1` and `TW_CLIENT=web` are set on every subprocess call
-- `/api/run` parses the command, sets the preflight env vars, then runs `task`
-- The preflight JSON is detected in the response and returned to the browser as
-  `{"preflight": true, "count": N, "verb": "…", "filter": "…"}`
-- The command-mode output bar renders **"This will modify N tasks matching
-  \<filter\>. Proceed?"** with green **Yes** / **Cancel** buttons
-- Yes re-POSTs with `confirmed: true`; the backend sets `TW_PREFLIGHT_CONFIRMED=1`
+No client implements the confirm-and-re-run flow above today.
+[tw-web](https://github.com/linuxcaffe/tw-web) used to (`/api/run`, removed 2026-10-15): its command
+mode now runs commands in an in-page terminal console, which clears `TW_NOINTERACT` and every
+`TW_PREFLIGHT_*`, so this hook stays out of the way and Taskwarrior's own bulk confirmation
+(`bulk`, `confirmation`) applies. The flow above is what a client without a terminal should do.
 
 ---
 
