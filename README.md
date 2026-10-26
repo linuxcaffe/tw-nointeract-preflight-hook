@@ -1,5 +1,10 @@
 # tw-nointeract-preflight-hook
 
+> **Retired 2026-10-26.** No client ever read its `tw_preflight` signal: tw-web runs bulk commands in its
+> terminal console, where Taskwarrior asks for confirmation itself. It's no longer in the awesome-taskwarrior
+> registry. The signal stays reserved in
+> [CONVENTIONS.md](https://github.com/linuxcaffe/awesome-taskwarrior/blob/main/CONVENTIONS.md).
+
 An `on-launch` Taskwarrior hook that protects non-interactive clients (web UIs,
 desktop GUIs, API wrappers) from accidentally running bulk-destructive commands
 without user confirmation.
